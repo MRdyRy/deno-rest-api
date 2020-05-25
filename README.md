@@ -10,6 +10,6 @@ for data storage.
 <hr/>
 <h3>Instruction for running</h3> <br/>
 <ul>
-  <li>open your cmd and type : deno run --allow-net entry point</li>
+  <li>open your cmd and type : deno run --allow-net server.ts</li>
   <li>for detail docs, just see https://deno.land/ </li>
  </ul>
