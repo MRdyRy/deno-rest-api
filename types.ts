@@ -11,14 +11,17 @@ export interface User {
     id: string;
     username: string;
     password: string;
+    createDate : Date;
+    updateDate : Date;
+    isActive : boolean;
   }
   
-  const users: Array<User> = [
-    {
-      id: "1",
-      username: "Rudy",
-      password: "123",
-    }
-  ]
+  // const users: Array<User> = [
+  //   {
+  //     id: "1",
+  //     username: "Rudy",
+  //     password: "123",
+  //   }
+  // ]
   
-  export default users;
+  // export default users;

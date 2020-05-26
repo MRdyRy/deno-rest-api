@@ -1,15 +1,9 @@
-# deno-rest-api
-deno js with oak framework and jwt <br/>
-oak   : https://deno.land/x/oak/ <br/>
-jwt   : https://deno.land/x/djwt
+# Deno 🦕
+oak       : https://deno.land/x/oak/ <br/>
+jwt       : https://deno.land/x/djwt <br/>
+mongoDB   : https://deno.land/x/mongo <br/>
+md5       : https://deno.land/x/md5 <br/>
+redis     : https://deno.land/x/redis <br/>
 
-next step for learn :<br/>
-use mongoDB  : https://deno.land/x/mongo <br/>
-for data storage.
-<br/>
-<hr/>
-<h3>Instruction for running</h3> <br/>
-<ul>
-  <li>open your cmd and type : deno run --allow-net server.ts</li>
-  <li>for detail docs, just see https://deno.land/ </li>
- </ul>
+deno run --allow-net --allow-write --allow-read --allow-plugin --allow-env  --unstable server.ts
+  
