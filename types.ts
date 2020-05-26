@@ -3,6 +3,8 @@ export interface Products{
     name : string;
     description : string;
     price : number;
+    date : Date;
+    isActive : boolean;
 }
 
 export interface User {

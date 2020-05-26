@@ -14,7 +14,7 @@ export const login = async (ctx : Context) => {
       if(value.username === user.username && value.password === user.password){
         const payload: Payload = {
           iss: user.username,
-          exp: setExpiration(new Date().getTime() + 60000),
+          exp: setExpiration(new Date().getTime() + 6000000),
         }
         const jwt = makeJwt({key,header,payload})
         if(jwt){

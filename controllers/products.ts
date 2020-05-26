@@ -1,23 +1,14 @@
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
 import { Products } from "../types.ts";
-let products: Products[] =[
-    {
-        id:"1",
-        name:"Earphone",
-        description:"Earphone for listening music",
-        price:150000
-    },
-    {
-        id:"2",
-        name:"Gaming Mouse",
-        description:"Mouse gaming",
-        price:150000
-    }
-]
+import db from "../config/db.ts";
+
+//collection mongodb
+const productCollection = db.collection('products')
 
 //@desc     Get all products
 //@route    GET /api/v1/products
-const getProducts = ({response}:{response:any}) => {
+const getProducts = async ({response}:{response:any}) => {
+    const products = await  productCollection.find({isActive :{$eq : true}})
     response.body = {
         succes: true,
         data:products
@@ -26,9 +17,9 @@ const getProducts = ({response}:{response:any}) => {
 
 //@desc     Get single product
 //@route    GET /api/v1/products/:id
-const getProduct = ({params, response}:{params:{id:string}, response:any}) => {
+const getProduct = async ({params, response}:{params:{id:string}, response:any}) => {
     response.body ='get'
-    const product: Products | undefined = products.find(p => p.id === params.id)
+    const product = await productCollection.findOne({_id:{$oid: params.id}})
 
     if(product) {
         response.status = 200,
@@ -60,14 +51,19 @@ const addProduct = async ({request, response}:{request: any, response:any}) => {
             data : null
         }
     }else{
-        const product: Products = body.value
-        product.id = v4.generate()
-        products.push(product)
+        const {value:{name,description,price}}= body
+        const id = await productCollection.insertOne({
+            name,
+            description,
+            price,
+            date : new Date(),
+            isActive : true
+        })
         response.status = 201,
         response.body = {
             respCode : '00',
             respDesc : `Approve`,
-            data : products
+            data : id
         }
     }
 }
@@ -75,23 +71,39 @@ const addProduct = async ({request, response}:{request: any, response:any}) => {
 //@desc     update product
 //@route    PUT /api/v1/products/:id
 const updateProduct = async ({params, request, response}:{params:{id:string}, request:any, response:any}) => {
+    const product = await productCollection.findOne({_id:{$oid: params.id}})
     
-    const product: Products | undefined = products.find(p => p.id === params.id)
+        // const product: Products | undefined = products.find(p => p.id === params.id)
 
     if(product) {
-        const body = await request.body()
+        const {value:{name,description,price,isActive}} = await request.body()
 
-        const updateData : {name?:string;description?:string,price?:number} = body.value
-
-        products = products.map(p => p.id === params.id ? { ...p, ...updateData} : p)
-
-        response.status = 200,
-        response.body = {
-            respCode : '00',
-            respDesc : 'Approve',
-            data : products
+        const {modifiedCount} = await productCollection.updateOne({_id:{$oid: params.id}},{
+            $set:{
+                name,
+                description,
+                price,
+                isActive
+            }
+        })
+        
+        if(!modifiedCount){
+                response.status = 500,
+                response.body = {
+                respCode : '00',
+                respDesc : `Failed Update Data!`,
+                data : null
+             }
+        }else{
+            response.status = 200,
+            response.body = {
+                respCode : '00',
+                respDesc : 'Approve',
+                data :  await productCollection.findOne({_id:{$oid: params.id}})
+            }
         }
     }else{
+
         response.status = 404,
         response.body = {
             respCode : '00',
@@ -103,14 +115,53 @@ const updateProduct = async ({params, request, response}:{params:{id:string}, re
 
 //@desc     delete single product
 //@route    DELETE /api/v1/products/:id
-const deleteProduct = ({params, response}:{params:{id:string}, response:any}) => {
+// const deleteProduct = ({params, response}:{params:{id:string}, response:any}) => {
 
-    products = products.filter(p => p.id !== params.id)
-    response.status = 200,
-    response.body = {
-        respCode : '00',
-        respDesc : `Approve`,
-        data : products
+    // products = products.filter(p => p.id !== params.id)
+    // response.status = 200,
+    // response.body = {
+    //     respCode : '00',
+    //     respDesc : `Approve`,
+    //     data : products
+    // }
+// }
+
+//delete ubah flag is active
+const deleteProduct = async ({params, request, response}:{params:{id:string}, request:any, response:any}) => {
+    const product = await productCollection.findOne({_id:{$oid: params.id}})
+    
+        // const product: Products | undefined = products.find(p => p.id === params.id)
+
+    if(product) {
+        const {modifiedCount} = await productCollection.updateOne({_id:{$oid: params.id}},{
+            $set:{
+                isActive : false
+            }
+        })
+        
+        if(!modifiedCount){
+                response.status = 500,
+                response.body = {
+                respCode : '00',
+                respDesc : `Failed Delete Data!`,
+                data : null
+             }
+        }else{
+            response.status = 200,
+            response.body = {
+                respCode : '00',
+                respDesc : 'Approve',
+                data :  await productCollection.findOne({_id:{$oid: params.id}})
+            }
+        }
+    }else{
+
+        response.status = 404,
+        response.body = {
+            respCode : '00',
+            respDesc : `Data dengan id : ${params.id} tidak di temukan!`,
+            data : null
+        }
     }
 }
 

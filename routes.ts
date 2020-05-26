@@ -11,7 +11,7 @@ router.post('/api/v1/login', login)
     .get('/api/v1/products/:id',authMiddleWare,  getProduct)
     .post('/api/v1/products',authMiddleWare, addProduct)
     .put('/api/v1/products/:id',authMiddleWare, updateProduct)
-    .delete('/api/v1/products/:id',authMiddleWare, deleteProduct)
+    .post('/api/v1/products/deactived/:id',authMiddleWare, deleteProduct)
 
 
  export default router
